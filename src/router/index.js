@@ -1,21 +1,22 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import ElementUI from 'element-ui';
-import shop from '@/components/shop/shop';
-import banner from '@/components/banner/banner';
 Vue.use(ElementUI);
 Vue.use(Router);
+import main from '@/views/index';
+import register from '@/views/user/register';
+
 export default new Router({
   mode: 'history',
   linkActiveClass: 'link-active',
   routes: [
     {
       path: '/',
-      component: shop
+      component: main
     },
     {
-      path: '/banner',
-      component: banner
+      path: '/register',
+      component: register
     }
   ]
 });
