@@ -82,8 +82,10 @@
               sex: self.ruleForm.sex
             }, function (data) {
               if (data.code === ERR_OK) {
-                window.location.href = '/';
-              }
+                window.location.href = '/login';
+              } else {
+                alert(data.msg);
+              };
             });
           } else {
             console.log('error submit!!');
