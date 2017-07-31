@@ -45,12 +45,12 @@
               username: self.ruleForm2.username,
               password: self.ruleForm2.pass
             }, function (data) {
-              debugger;
               if (data.code === ERR_OK) {
+                sessionStorage.setItem('token', data.token);
                 window.location.href = '/';
               } else {
                 alert(data.msg);
-              };
+              }
             });
           } else {
             console.log('error submit!!');
