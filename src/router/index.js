@@ -9,6 +9,7 @@ Vue.use(VueQuillEditor);
 import main from '@/views/index';
 import register from '@/views/user/register';
 import login from '@/views/user/login';
+import addType from '@/views/art/addType';
 import addArt from '@/views/art/addArt';
 
 export default new Router({
@@ -26,6 +27,10 @@ export default new Router({
     {
       path: '/login',
       component: login
+    },
+    {
+      path: '/art/addType',
+      component: addType
     },
     {
       path: '/addArt',

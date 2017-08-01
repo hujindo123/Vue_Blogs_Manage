@@ -56,7 +56,7 @@
         self.$refs[ruleForm].validate((valid) => {
           if (valid) {
             if (self.ruleForm.content.length >= 20) {
-              axios('get', '/addArt', {
+              axios('get', '/api/addArt', {
                 title: self.ruleForm.title,
                 select: self.ruleForm.selectType,
                 content: self.ruleForm.content
@@ -79,13 +79,12 @@
     },
     created () {
       var self = this;
-      axios('get', '/artType', {}, function (data) {
+      axios('get', '/api/artType', {}, function (data) {
         if (data.code === ERR_OK) {
           self.ruleForm.options = data.data;
         } else {
-          alert(data.msg);
+          alert(data.message);
         }
-        ;
       });
     },
     components: {

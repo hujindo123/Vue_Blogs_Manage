@@ -9,23 +9,21 @@ const axios = (method, path, data, callback) => {
     Axios.get(path, {
       params: data
     }).then((response) => {
-      callback(response.data);
-    }).catch(function (err) {
-      if (err.response.data.code === -400) {
-        alert(err.response.data.message);
+      if (response.data.code === -400) {
+        alert(response.data.message);
         window.location.href = '/login';
+      } else {
+        callback(response.data);
       }
-      callback(err);
     });
   } else if (method === 'post') {
     Axios.post(path, data).then((response) => {
-      callback(response.data);
-    }).catch(function (err) {
-      if (err.response.data.code === -400) {
-        alert(err.response.data.message);
+      if (response.data.code === -400) {
+        alert(response.data.message);
         window.location.href = '/login';
+      } else {
+        callback(response.data);
       }
-      callback(err);
     });
   }
 };
