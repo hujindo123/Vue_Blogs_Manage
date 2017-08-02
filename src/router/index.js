@@ -17,10 +17,6 @@ export default new Router({
   linkActiveClass: 'link-active',
   routes: [
     {
-      path: '/',
-      component: main
-    },
-    {
       path: '/register',
       component: register
     },
@@ -29,12 +25,19 @@ export default new Router({
       component: login
     },
     {
-      path: '/art/addType',
-      component: addType
-    },
-    {
-      path: '/addArt',
-      component: addArt
+      path: '/',
+      component: main,
+      redirect: '/art/addType',
+      children: [
+        {
+          path: '/art/addType',
+          component: addType
+        },
+        {
+          path: '/art/addArt',
+          component: addArt
+        }
+      ]
     }
   ]
 });

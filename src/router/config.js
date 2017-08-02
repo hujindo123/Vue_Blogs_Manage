@@ -2,28 +2,37 @@
  * Created by Administrator on 2017/7/28.
  */
 import Axios from 'axios';
-Axios.defaults.baseURL = 'http://localhost:3000';
+import qs from 'qs';
+const ajax = Axios.create({
+  baseURL: 'http://localhost:3000'
+});
+ajax.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const axios = (method, path, data, callback) => {
   data['token'] = sessionStorage.getItem('token');
   if (method === 'get') {
-    Axios.get(path, {
+    ajax.get(path, {
       params: data
     }).then((response) => {
       if (response.data.code === -400) {
-        alert(response.data.message);
+        console.log(response.data.message);
         window.location.href = '/login';
       } else {
         callback(response.data);
       }
+    }).catch(function (error) {
+      console.log(error);
     });
   } else if (method === 'post') {
-    Axios.post(path, data).then((response) => {
+    ajax.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    ajax.post(path, qs.stringify(data)).then((response) => {
       if (response.data.code === -400) {
         alert(response.data.message);
         window.location.href = '/login';
       } else {
         callback(response.data);
       }
+    }).catch(function (error) {
+      console.log(error);
     });
   }
 };

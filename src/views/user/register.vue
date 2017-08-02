@@ -1,28 +1,32 @@
 <template>
-  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-    <el-form-item label="账号" prop="name">
-      <el-input v-model="ruleForm.name"></el-input>
-    </el-form-item>
-    <el-form-item label="密码" prop="pwd">
-      <el-input type="password" v-model="ruleForm.pwd"></el-input>
-    </el-form-item>
-    <el-form-item label="确认密码" prop="rpwd">
-      <el-input type="password" v-model="ruleForm.rpwd"></el-input>
-    </el-form-item>
-    <el-form-item label="邮箱" prop="email">
-      <el-input v-model="ruleForm.email"></el-input>
-    </el-form-item>
-    <el-form-item label="性别" prop="sex">
-      <el-radio-group v-model="ruleForm.sex">
-        <el-radio label="男"></el-radio>
-        <el-radio label="女"></el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item label-width="100px">
-      <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-      <el-button @click="resetForm('ruleForm')">重置</el-button>
-    </el-form-item>
-  </el-form>
+  <div class="register_main">
+    <router-link to="/login" class="apply">返回登录页面</router-link>
+    <div class="register_wrapper">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="账号" prop="name">
+          <el-input v-model="ruleForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="pwd">
+          <el-input type="password" v-model="ruleForm.pwd"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="rpwd">
+          <el-input type="password" v-model="ruleForm.rpwd"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="ruleForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" prop="sex">
+          <el-radio-group v-model="ruleForm.sex">
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label-width="100px">
+          <el-button type="primary" @click="submitForm('ruleForm')">立即申请</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -75,7 +79,7 @@
         var self = this;
         self.$refs[formName].validate((valid) => {
           if (valid) {
-            axios('get', '/register', {
+            axios('post', '/register', {
               username: self.ruleForm.name,
               password: self.ruleForm.pwd,
               email: self.ruleForm.email,
@@ -92,14 +96,41 @@
             return false;
           }
         });
-      },
-      resetForm (formName) {
-        this.$refs[formName].resetFields();
       }
     }
   };
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  .register_main
+    width 100%
+    height 100%
+    background url("../../../static/img/bg.jpg") center center no-repeat
+    background-size cover
+    overflow hidden
+    .apply
+      display block
+      position absolute
+      right 0
+      top 0
+      padding 20px
+    .register_wrapper
+      width 460px
+      height 500px
+      background rgba(0, 0, 0, 0.3);
+      position relative
+      left 50%
+      top 50%
+      margin-left -280px
+      margin-top -300px
+      border-radius 5px
+      color #fff
+      .el-form
+        width 390px
+        padding-top 70px
+        .el-form-item
+          margin-bottom 32px
+        .el-form-item__label,.el-radio
+          color #fff
 
 </style>
