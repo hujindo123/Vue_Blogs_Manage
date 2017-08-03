@@ -11,6 +11,8 @@ import register from '@/views/user/register';
 import login from '@/views/user/login';
 import addType from '@/views/art/addType';
 import addArt from '@/views/art/addArt';
+import verifyList from '@/views/art/verifyList';
+import verifyLog from '@/views/art/verifyLog'; // 审核记录
 
 export default new Router({
   mode: 'history',
@@ -36,6 +38,14 @@ export default new Router({
         {
           path: '/art/addArt',
           component: addArt
+        },
+        {
+          path: '/art/verifyList',
+          component: verifyList
+        },
+        {
+          path: '/art/verifyLog',
+          component: verifyLog
         }
       ]
     }

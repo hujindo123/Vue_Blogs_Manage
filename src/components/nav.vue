@@ -4,7 +4,9 @@
       <el-submenu index="1">
         <template slot="title"><i class="el-icon-edit"></i>文章</template>
         <el-menu-item index="1-1" :route="{path: '/art/addType'}">添加分类</el-menu-item>
-        <el-menu-item index="1-2" :route="{path: '/art/addArt'}">添加文章</el-menu-item>
+        <el-menu-item index="1-2" :route="{path: '/art/addArt'}">添加公告</el-menu-item>
+        <el-menu-item index="1-3" :route="{path: '/art/verifyList'}">文章审核</el-menu-item>
+        <el-menu-item index="1-4" :route="{path: '/art/verifyLog'}">审核记录</el-menu-item>
       </el-submenu>
       <el-submenu index="2">
         <template slot="title"><i class="el-icon-message"></i>导航一</template>

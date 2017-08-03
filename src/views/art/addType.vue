@@ -7,13 +7,12 @@
       </el-breadcrumb>
     </div>
     <el-table :data="artType" border max-height="500" style="width: 100%">
-      <el-table-column prop="artType_id" label="ID" min-width="15%"></el-table-column>
-      <el-table-column prop="artType_info" label="分类名称" min-width="30%"></el-table-column>
-      <el-table-column prop="artType_name" label="分类描述" min-width="40%"></el-table-column>
-      <el-table-column label="操作" width="150px" min-width="15%">
+      <el-table-column type="index" label="ID" ></el-table-column>
+      <el-table-column prop="artType_info" label="分类名称" ></el-table-column>
+      <el-table-column prop="artType_name" label="分类描述"  ></el-table-column>
+      <el-table-column label="操作" >
         <template scope="scope" v-if="artType">
-          <el-button @click.native.prevent="deleteRow(scope.$index, artType)" type="text" size="small">移除</el-button>
-          <el-button @click.native.prevent="deleteRow(scope.$index, artType)" type="text" size="small">修改</el-button>
+          <el-button @click.native.prevent="deleteRow(scope.$index, artType)" type="text" size="small">隐藏</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,7 +60,6 @@
           id: id
         }, (response) => {
           if (response.code === ERR_OK) {
-            debugger;
             callback && callback();
           } else {
             alert(response.msg);
