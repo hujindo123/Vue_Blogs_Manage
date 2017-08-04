@@ -1,108 +1,160 @@
 <template>
-  <div>
+  <div class="log">
     <el-table :data="tableData" stripe style="width: 100%" v-if="tableData">
       <el-table-column
-        label="日期"
-        min-width="15%">
+        label="状态"
+        fixed
+        width="80">
+        <template scope="scope">
+          <i :class="tableData[scope.$index].art_pass == 1 ? 'el-icon-check' : 'el-icon-close'"></i>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="上传日期"
+        width="200">
         <template scope="scope">
           {{tableData[scope.$index].art_createTime | formatDate}}
         </template>
       </el-table-column>
       <el-table-column
+        prop="nickname"
+        label="用户名"
+        min-width="15%">
+      </el-table-column>
+      <el-table-column
         prop="artType_name"
-        min-width="15%"
-        label="分类">
+        label="分类"
+        min-width="15%">
       </el-table-column>
       <el-table-column
         prop="art_title"
-        min-width="15%"
+        min-width="40%"
         label="主题">
+      </el-table-column>
+      <el-table-column
+        label="未通过原因">
+        <template scope="scope">
+          <p>~{{tableData[scope.$index].art_reason}}</p>
+          <p>~{{tableData[scope.$index].art_desc}}</p>
+        </template>
+      </el-table-column>
+      <el-table-column
+        width="200"
+        label="审核日期">
+        <template scope="scope">
+          {{tableData[scope.$index].art_verifyTime | formatDate}}
+        </template>
       </el-table-column>
       <el-table-column
         prop="art_title"
         label="操作"
-        min-width="15%">
+        fixed="right"
+        width="150">
         <template scope="scope" v-if="tableData">
           <el-button class="e_button" @click.native.prevent="seeRow(scope.$index, tableData)" type="text" size="small">
             查看
           </el-button>
-          <el-button class="e_button" @click.native.prevent="addRow(scope.$index, tableData)" type="text" size="small">
+          <el-button class="e_button" v-if="tableData[scope.$index].art_pass == -1" @click.native.prevent="addRow(scope.$index, tableData)" type="text" size="small">
             通过
           </el-button>
-          <el-button class="e_button" @click.native.prevent="deleteRow(scope.$index, tableData)" type="text"
-                     size="small">不通过
+          <el-button class="e_button" v-if="tableData[scope.$index].art_pass == 1" @click.native.prevent="deleteRow(scope.$index, tableData)" type="text" size="small">
+            未通过
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="zhezhao" v-show="blankPage">
-      <i class="close el-icon-circle-close" @click="blankPage=false"></i>
-      <div class="showpage">
-        <h1>{{showpage.art_title}}</h1>
-        <div class="time">{{showpage.art_createTime | formatDate}}</div>
-        <div class="c_content" v-html="showpage.art_content"></div>
+      <div v-if="see" style="height: 100%">
+        <i class="close el-icon-circle-close" @click="close"></i>
+        <div class="showpage">
+          <h1>{{showpage.art_title}}</h1>
+          <div class="time">{{showpage.art_createTime | formatDate}}</div>
+          <div class="c_content" v-html="showpage.art_content"></div>
+        </div>
+      </div>
+      <div v-if="upass" class="v_msg">
+        <Reason :form="form"></Reason>
       </div>
     </div>
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-  .e_button
-    margin-right 5%
-
-  .zhezhao
-    position absolute
-    width 100%
-    height 100%
-    top 0
-    left 0
-    z-index 2
-    background rgba(0, 0, 0, 0.5)
-    .close
-      font-size 35px
-      color #fff
+  .log
+    .zhezhao
       position absolute
-      cursor pointer
-      left 50%
-      margin-left 250px
-      top 50%
-      margin-top -25px
-    .showpage
-      position relative
-      width 500px
-      min-height 100%
-      overflow hidden
-      overflow-y scroll
-      background #ffffff
-      left 50%
-      margin-left -330px
+      width 100%
+      height 100%
       top 0
-      z-index 2
-      line-height 1.5
-      padding 0 10px
-      box-sizing border-box
-      h1
-        padding 25px
-        text-align center
-        font-size 20px
+      left 0
+      z-index 200
+      background rgba(0, 0, 0, 0.5)
+      .close
+        font-size 35px
+        color #fff
+        position absolute
+        cursor pointer
+        left 50%
+        margin-left 250px
+        top 50%
+        margin-top -25px
+      .showpage
+        position relative
+        width 500px
+        min-height 100%
+        overflow hidden
+        overflow-y scroll
+        background #ffffff
+        left 50%
+        margin-left -330px
+        top 0
+        z-index 2
         line-height 1.5
-        font-weight bold
-      .time
-        color #bebebe
-      .c_content
-        margin-top 15px
-        img
-          width 100%
+        padding 0 10px
+        box-sizing border-box
+        h1
+          padding 25px
+          text-align center
+          font-size 20px
+          line-height 1.5
+          font-weight bold
+        .time
+          color #bebebe
+        .c_content
+          margin-top 15px
+          img
+            width 100%
+      .v_msg
+        width 50%
+        padding 35px
+        box-sizing border-box
+        min-height 400px
+        background #fff
+        margin 0 auto
+        margin-top 50px
 </style>
 <script>
   const ERR_OK = 200;
   import { axios, formatDate } from '@/router/config';
+  import Reason from '@/components/Reason';
   export default {
     data () {
       return {
-        tableData: '',
+        tableData: [],
         showpage: '',
-        blankPage: false
+        blankPage: false,
+        see: false,
+        upass: false,
+        choiceId: ' ',
+        form: {
+          type: [],
+          desc: '',
+          result: ' ',
+          art_id: ' '
+        }
       };
+    },
+    components: {
+      Reason
     },
     filters: {
       formatDate (time) {
@@ -112,30 +164,57 @@
     },
     created () {
       let self = this;
-      axios('get', '/api/verifyList', {}, (response) => {
+      axios('get', '/api/passArtLog', {}, (response) => {
         if (response.code === ERR_OK) {
           self.tableData = response.data;
         } else {
-          alert(response.msg);
+          console.log(response.msg);
         }
       });
     },
     methods: {
+      close () {
+        this.blankPage = false;
+        this.see = false;
+        this.upass = false;
+      },
       seeRow (index, val) {
         this.blankPage = true;
+        this.see = true;
         this.showpage = val[index];
       },
       addRow (index, val) {
-        axios('post', '/api/syncList', {
-          art_id: val[index].art_id,
-          artType_id: val[index].artType_id,
-          art_title: val[index].art_title,
-          art_createTime: val[index].art_createTime,
-          art_content: val[index].art_content,
-          u_id: val[index].u_id
+        axios('get', '/api/passArt', {
+          art_id: val[index].art_id
         }, (response) => {
           if (response.code === ERR_OK) {
+            val.splice(index, 1);
             console.log(response.msg);
+          } else {
+            console.log(response.msg);
+          }
+        });
+      },
+      deleteRow (index, val) {
+        this.blankPage = true;
+        this.upass = true;
+        this.choiceId = index;
+        this.form.art_id = val[index].art_id;
+      },
+      onSubmit () {
+        var self = this;
+        this.form.result = '';
+        for (var value of (this.form.type)) {
+          this.form.result += value + '、';
+        }
+        axios('get', '/api/upassArt', {
+          art_id: this.form.art_id,
+          art_reason: this.form.result,
+          art_desc: this.form.desc
+        }, (response) => {
+          if (response.code === ERR_OK) {
+            self.tableData.splice(self.choiceId, 1);
+            self.close();
           } else {
             alert(response.msg);
           }
