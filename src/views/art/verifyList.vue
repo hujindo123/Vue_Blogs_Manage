@@ -74,7 +74,6 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .e_button
     margin-right 5%
-
   .zhezhao
     position absolute
     width 100%
