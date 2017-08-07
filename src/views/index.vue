@@ -35,8 +35,8 @@
       display flex
       flex-flow row
       .nav
-        width 160px;
-        flex 0 0 160px
+        width 200px;
+        flex 0 0 200px
         height 100%;
         position relative
         background #363a3c
