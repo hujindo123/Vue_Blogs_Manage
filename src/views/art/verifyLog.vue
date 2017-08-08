@@ -1,37 +1,38 @@
 <template>
   <div class="log">
-    <el-table :data="tableData" stripe style="width: 100%" v-if="tableData">
+    <el-table :data="tableData" stripe style="width: 1222px" v-if="tableData">
       <el-table-column
         label="状态"
         fixed
-        width="80">
+          width="70px">
         <template scope="scope">
-          <i :class="tableData[scope.$index].art_pass == 1 ? 'el-icon-check' : 'el-icon-close'"></i>
+          <i :class="tableData[scope.$index].article_pass_status == 1 ? 'el-icon-check' : 'el-icon-close'"></i>
         </template>
       </el-table-column>
       <el-table-column
         label="上传日期"
-        width="200">
+        width="150px">
         <template scope="scope">
-          {{tableData[scope.$index].art_createTime | formatDate}}
+          {{tableData[scope.$index].article_create_time | formatDate}}
         </template>
       </el-table-column>
       <el-table-column
         prop="nickname"
         label="用户名"
-        min-width="15%">
+        width="100px">
       </el-table-column>
       <el-table-column
         prop="artType_name"
         label="分类"
-        min-width="15%">
+        width="150px">
       </el-table-column>
       <el-table-column
         prop="art_title"
-        min-width="40%"
+        width="150px"
         label="主题">
       </el-table-column>
       <el-table-column
+        width="250px"
         label="未通过原因">
         <template scope="scope">
           <p>~{{tableData[scope.$index].art_reason}}</p>
@@ -42,7 +43,7 @@
         width="200"
         label="审核日期">
         <template scope="scope">
-          {{tableData[scope.$index].art_verifyTime | formatDate}}
+          {{tableData[scope.$index].article_verify_time | formatDate}}
         </template>
       </el-table-column>
       <el-table-column
@@ -54,10 +55,10 @@
           <el-button class="e_button" @click.native.prevent="seeRow(scope.$index, tableData)" type="text" size="small">
             查看
           </el-button>
-          <el-button class="e_button" v-if="tableData[scope.$index].art_pass == -1" @click.native.prevent="addRow(scope.$index, tableData)" type="text" size="small">
+          <el-button class="e_button" v-if="tableData[scope.$index].article_pass_status == -1" @click.native.prevent="addRow(scope.$index, tableData)" type="text" size="small">
             通过
           </el-button>
-          <el-button class="e_button" v-if="tableData[scope.$index].art_pass == 1" @click.native.prevent="deleteRow(scope.$index, tableData)" type="text" size="small">
+          <el-button class="e_button" v-if="tableData[scope.$index].article_pass_status == 1" @click.native.prevent="deleteRow(scope.$index, tableData)" type="text" size="small">
             未通过
           </el-button>
         </template>
@@ -164,7 +165,7 @@
     },
     created () {
       let self = this;
-      axios('get', '/api/passArtLog', {}, (response) => {
+      axios('get', '/api/select_verify_log', {}, (response) => {
         if (response.code === ERR_OK) {
           self.tableData = response.data;
         } else {

@@ -6,7 +6,7 @@
         <el-breadcrumb-item>添加分类</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <el-button type="primary" @click="dialogFormVisible = true">添加分类</el-button>
+    <el-button type="primary"  @click="dialogFormVisible = true">添加分类</el-button>
     <el-radio class="radio" v-model="radio" label="1">已显示分类</el-radio>
     <el-radio class="radio" v-model="radio" label="2">未显示分类</el-radio>
     <el-dialog :visible.sync="dialogFormVisible">
@@ -58,10 +58,12 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="block">
+    <div class="block" v-if="artType.length>0">
       <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
         :current-page.sync="currentPage1"
-        :page-size="2"
+        :page-size="size"
         layout="total, prev, pager, next"
         :total="total">
       </el-pagination>
@@ -76,6 +78,7 @@
     data () {
       return {
         radio: '1',
+        artTypeList: [],
         artType: [],
         dialogFormVisible: false,
         dialogFormVisible1: false,
@@ -90,20 +93,29 @@
         },
         formLabelWidth: '120px',
         currentPage1: 1,
-        total: 0, // 总共几页
-        size: 2 // 每页显示条目个数
+        total: 0, // 总共的条数
+        size: 8 // 每页显示条目个数
       };
     },
     created () {
       this.getType();
     },
     methods: {
+      handleSizeChange (val) {
+        var self = this;
+        self.artType = self.artTypeList.slice(self.size * (val - 1), self.size * val);
+      },
+      handleCurrentChange (val) {
+        var self = this;
+        self.artType = self.artTypeList.slice(self.size * (val - 1), self.size * val);
+      },
       getType () {
         let self = this;
         axios('get', '/api/select_article_type', {}, (response) => {
           if (response.code === ERR_OK) {
-            self.artType = response.data;
-            self.total = Math.ceil(response.data.length / self.size);
+            self.artTypeList = response.data;
+            self.artType = self.artTypeList.slice(0, self.size);
+            self.total = response.data.length;
           } else {
             alert(response.msg);
           }
@@ -113,7 +125,9 @@
         let self = this;
         axios('get', '/api/show_unselsect_article_type', {}, (response) => {
           if (response.code === ERR_OK) {
-            self.artType = response.data;
+            self.artTypeList = response.data;
+            self.artType = self.artTypeList.slice(0, self.size);
+            self.total = response.data.length;
           } else {
             alert(response.msg);
           }

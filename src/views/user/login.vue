@@ -62,6 +62,7 @@
             }, function (data) {
               if (data.code === ERR_OK) {
                 sessionStorage.setItem('token', data.token);
+                sessionStorage.setItem('level', data.level);
                 window.location.href = '/';
               } else {
                 alert(data.msg);

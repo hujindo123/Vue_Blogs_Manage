@@ -3,8 +3,10 @@
     <el-menu default-active="1-1" theme="dark" :router="true">
       <el-submenu index="1">
         <template slot="title"><i class="el-icon-edit"></i>文章</template>
-        <el-menu-item index="1-1" :route="{path: '/art/addType'}">添加分类</el-menu-item>
-        <el-menu-item index="1-2" :route="{path: '/art/addArt'}">添加公告</el-menu-item>
+        <template v-if="level == 1">
+          <el-menu-item index="1-1" :route="{path: '/art/addType'}">添加分类</el-menu-item>
+          <el-menu-item index="1-2" :route="{path: '/art/addArt'}">添加公告</el-menu-item>
+        </template>
         <el-menu-item index="1-3" :route="{path: '/art/verifyList'}">文章审核</el-menu-item>
         <el-menu-item index="1-4" :route="{path: '/art/verifyLog'}">审核记录</el-menu-item>
       </el-submenu>
@@ -32,6 +34,11 @@
       },
       handleClose (key, keyPath) {
         console.log(key, keyPath);
+      }
+    },
+    computed: {
+      level () {
+        return sessionStorage.getItem('level');
       }
     }
   };

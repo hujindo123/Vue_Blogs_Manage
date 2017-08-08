@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-table :data="tableData" stripe style="width: 100%" v-if="tableData">
+    <el-table :data="dataList" stripe style="width: 100%">
       <el-table-column
         label="日期"
         min-width="15%">
         <template scope="scope">
-          {{tableData[scope.$index].art_createTime | formatDate}}
+          {{tableData[scope.$index].article_create_time | formatDate}}
         </template>
       </el-table-column>
       <el-table-column
@@ -14,12 +14,12 @@
         min-width="15%">
       </el-table-column>
       <el-table-column
-        prop="artType_name"
+        prop="article_type_name"
         label="分类"
         min-width="15%">
       </el-table-column>
       <el-table-column
-        prop="art_title"
+        prop="article_title"
         min-width="40%"
         label="主题">
       </el-table-column>
@@ -28,25 +28,38 @@
         label="操作"
         min-width="15%">
         <template scope="scope" v-if="tableData">
-          <el-button class="e_button" @click.native.prevent="seeRow(scope.$index, tableData)" type="text" size="small">
+          <el-button class="e_button" @click.native.prevent="getArticle(scope.$index, tableData)" type="text"
+                     size="small">
             查看
           </el-button>
-          <el-button class="e_button" @click.native.prevent="addRow(scope.$index, tableData)" type="text" size="small">
+          <el-button class="e_button" @click.native.prevent="verifyPass(scope.$index, tableData)" type="text"
+                     size="small">
             通过
           </el-button>
-          <el-button class="e_button" @click.native.prevent="deleteRow(scope.$index, tableData)" type="text"
+          <el-button class="e_button" @click.native.prevent="verifyUpass(scope.$index, tableData)" type="text"
                      size="small">不通过
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <div class="block" v-if="dataList.length>0">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage1"
+        :page-size="size"
+        layout="total, prev, pager, next"
+        :total="total">
+      </el-pagination>
+    </div>
     <div class="zhezhao" v-show="blankPage">
       <div v-if="see" style="height: 100%">
         <i class="close el-icon-circle-close" @click="close"></i>
         <div class="showpage">
-          <h1>{{showpage.art_title}}</h1>
-          <div class="time">{{showpage.art_createTime | formatDate}}</div>
-          <div class="c_content" v-html="showpage.art_content"></div>
+          <h1>{{showpage.article_title}}</h1>
+          <div class="time">{{showpage.article_create_time | formatDate}} <span class="nickname">{{nickname}}</span>
+          </div>
+          <div class="c_content" v-html="showpage.article_content"></div>
         </div>
       </div>
       <div v-if="upass" class="v_msg">
@@ -74,6 +87,11 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .e_button
     margin-right 5%
+
+  .block
+    margin 20px auto
+    text-align center
+
   .zhezhao
     position absolute
     width 100%
@@ -113,6 +131,8 @@
         font-weight bold
       .time
         color #bebebe
+        .nickname
+          margin-left 50px
       .c_content
         margin-top 15px
         img
@@ -133,6 +153,7 @@
     data () {
       return {
         tableData: [],
+        nickname: '',
         showpage: '',
         blankPage: false,
         see: false,
@@ -143,7 +164,11 @@
           desc: '',
           result: ' ',
           art_id: ' '
-        }
+        },
+        dataList: '',
+        currentPage1: 1,
+        total: 0, // 总共的条数
+        size: 1 // 每页显示条目个数
       };
     },
     filters: {
@@ -153,14 +178,7 @@
       }
     },
     created () {
-      let self = this;
-      axios('get', '/api/verifyList', {}, (response) => {
-        if (response.code === ERR_OK) {
-          self.tableData = response.data;
-        } else {
-          console.log(response.msg);
-        }
-      });
+      this.getList();
     },
     methods: {
       close () {
@@ -168,28 +186,50 @@
         this.see = false;
         this.upass = false;
       },
-      seeRow (index, val) {
-        this.blankPage = true;
-        this.see = true;
-        this.showpage = val[index];
-      },
-      addRow (index, val) {
-        axios('get', '/api/passArt', {
-          art_id: val[index].art_id
-        }, (response) => {
+      getList () {
+        let self = this;
+        /* 获取列表 */
+        axios('get', '/api/select_verify_list', {}, (response) => {
           if (response.code === ERR_OK) {
-            val.splice(index, 1);
-            console.log(response.msg);
+            self.tableData = response.data;
+            self.dataList = self.tableData.slice(0, self.size);
+            self.total = response.data.length;
           } else {
             console.log(response.msg);
           }
         });
       },
-      deleteRow (index, val) {
+      getArticle (index, val) {
+        var self = this;
+        self.blankPage = true;
+        self.see = true;
+        axios('get', '/api/select_article', {
+          id: val[index].article_id
+        }, (response) => {
+          if (response.code === ERR_OK) {
+            self.showpage = response.data;
+            self.nickname = val[index].nickname;
+          } else {
+            console.log(response.msg);
+          }
+        });
+      },
+      verifyPass (index, val) {
+        axios('get', '/api/verify_pass_article', {
+          art_id: val[index].article_id
+        }, (response) => {
+          if (response.code === ERR_OK) {
+            this.getList();
+          } else {
+            console.log(response.msg);
+          }
+        });
+      },
+      verifyUpass (index, val) {
         this.blankPage = true;
         this.upass = true;
         this.choiceId = index;
-        this.form.art_id = val[index].art_id;
+        this.form.art_id = val[index].article_id;
       },
       onSubmit () {
         var self = this;
@@ -198,7 +238,7 @@
           this.form.result += value + '、';
         }
         axios('get', '/api/upassArt', {
-          art_id: this.form.art_id,
+          art_id: this.form.article_id,
           art_reason: this.form.result,
           art_desc: this.form.desc
         }, (response) => {
@@ -209,6 +249,14 @@
             alert(response.msg);
           }
         });
+      },
+      handleSizeChange (val) {
+        var self = this;
+        self.dataList = self.tableData.slice(self.size * (val - 1), self.size * val);
+      },
+      handleCurrentChange (val) {
+        var self = this;
+        self.dataList = self.tableData.slice(self.size * (val - 1), self.size * val);
       }
     }
   };

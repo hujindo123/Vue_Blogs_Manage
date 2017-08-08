@@ -2,8 +2,8 @@
   <div style="width: 100%">
     <div class="breadcrumb">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }">文章</el-breadcrumb-item>
-        <el-breadcrumb-item>添加文章</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/' }">公告</el-breadcrumb-item>
+        <el-breadcrumb-item >添加公告</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
@@ -11,14 +11,7 @@
         <el-input v-model="ruleForm.title" placeholder="请输入内容" style="width: 50%"></el-input>
       </el-form-item>
       <el-form-item label="类别" prop="selectType">
-        <el-select v-model="ruleForm.selectType" placeholder="请选择" style="width: 25%">
-          <el-option
-            v-for="item in (ruleForm.options)"
-            :key="item.value"
-            :label="item.artType_name"
-            :value="item.artType_id">
-          </el-option>
-        </el-select>
+        <el-input v-model="ruleForm.selectType" placeholder="请输入原因" style="width: 50%"></el-input>
       </el-form-item>
       <el-form-item>
         <!-- bidirectional data binding（双向数据绑定） -->
@@ -36,7 +29,6 @@
 <script type="text/ecmascript-6">
   import { quillEditor } from 'vue-quill-editor';
   import { axios } from '@/router/config';
-  const ERR_OK = 200;
   export default {
     data () {
       return {
@@ -49,11 +41,12 @@
         },
         rules: {
           title: [
-            {required: true, message: '请输入文章标题', trigger: 'blur'},
+            {required: true, message: '请输入公告标题', trigger: 'blur'},
             {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
           ],
           selectType: [
-            {required: true, message: '请选择文章类别', trigger: 'change', type: 'number'}
+            {required: true, message: '请输入公告原因', trigger: 'blur'},
+            {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
           ]
         }
       };
@@ -64,15 +57,15 @@
         self.$refs[ruleForm].validate((valid) => {
           if (valid) {
             if (self.ruleForm.content.length >= 200) {
-              axios('get', '/api/addArt', {
+              axios('get', '/api/notice', {
                 title: self.ruleForm.title,
-                select: self.ruleForm.selectType,
+                reason: self.ruleForm.selectType,
                 content: self.ruleForm.content
               }, function (data) {
                 console.log(data);
               });
             } else {
-              self.ruleForm.error = '文章最小得200字';
+              self.ruleForm.error = '公告最小得200字';
               setTimeout(() => {
                 self.ruleForm.error = '';
               }, 3000);
@@ -85,16 +78,6 @@
         console.log(this.ruleForm.content);
       }
     },
-    created () {
-      var self = this;
-      axios('get', '/api/artType', {}, function (data) {
-        if (data.code === ERR_OK) {
-          self.ruleForm.options = data.data;
-        } else {
-          alert(data.message);
-        }
-      });
-    },
     components: {
       quillEditor
     }
@@ -106,6 +89,6 @@
     width 80%
     text-align left
   .ql-container
-    height 300px
+    height 200px
     overflow-y scroll
 </style>
