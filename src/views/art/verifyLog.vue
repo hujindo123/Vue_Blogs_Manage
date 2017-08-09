@@ -1,6 +1,6 @@
 <template>
   <div class="log">
-    <el-table :data="tableData" stripe style="width: 1222px" v-if="tableData">
+    <el-table :data="tableData" stripe style="width: 1322px" v-if="tableData">
       <el-table-column
         label="状态"
         fixed
@@ -18,16 +18,16 @@
       </el-table-column>
       <el-table-column
         prop="nickname"
-        label="用户名"
+        label="作者"
         width="100px">
       </el-table-column>
       <el-table-column
-        prop="artType_name"
+        prop="article_type_name"
         label="分类"
         width="150px">
       </el-table-column>
       <el-table-column
-        prop="art_title"
+        prop="article_title"
         width="150px"
         label="主题">
       </el-table-column>
@@ -35,16 +35,20 @@
         width="250px"
         label="未通过原因">
         <template scope="scope">
-          <p>~{{tableData[scope.$index].art_reason}}</p>
-          <p>~{{tableData[scope.$index].art_desc}}</p>
+          <p>{{tableData[scope.$index].article_reason}}</p>
         </template>
       </el-table-column>
       <el-table-column
-        width="200"
+        width="200px"
         label="审核日期">
         <template scope="scope">
           {{tableData[scope.$index].article_verify_time | formatDate}}
         </template>
+      </el-table-column>
+      <el-table-column
+        width="100px"
+        prop="verify_user_name"
+        label="审核员">
       </el-table-column>
       <el-table-column
         prop="art_title"
@@ -132,6 +136,10 @@
         background #fff
         margin 0 auto
         margin-top 50px
+  .el-icon-check
+    color green
+   .el-icon-close
+    color red
 </style>
 <script>
   const ERR_OK = 200;
