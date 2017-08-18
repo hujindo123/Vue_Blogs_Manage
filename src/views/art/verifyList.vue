@@ -52,36 +52,11 @@
         :total="total">
       </el-pagination>
     </div>
-    <div class="zhezhao" v-show="blankPage">
-      <div v-if="see" style="height: 100%">
-        <i class="close el-icon-circle-close" @click="close"></i>
-        <div class="showpage">
-          <h1>{{showpage.article_title}}</h1>
-          <div class="time">{{showpage.article_create_time | formatDate}} <span class="nickname">{{nickname}}</span>
-          </div>
-          <div class="c_content" v-html="showpage.article_content"></div>
-        </div>
-      </div>
-      <div v-if="upass" class="v_msg">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="原因">
-            <el-checkbox-group v-model="form.type">
-              <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-              <el-checkbox label="地推活动" name="type"></el-checkbox>
-              <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-              <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item label="补充说明">
-            <el-input type="textarea" v-model="form.desc"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">提交</el-button>
-            <el-button @click="close()">取消</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
+    <mode v-if="blankPage" :showpage="showpage" :upass="upass" :form="form" :nickname="nickname" @close="close"></mode>
+    <!-- <div class="zhezhao" v-show="blankPage">
+
+
+     </div>-->
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -148,28 +123,31 @@
 </style>
 <script>
   const ERR_OK = 200;
+  import mode from '@/components/mode';
   import { axios, formatDate } from '@/router/config';
   export default {
     data () {
       return {
         tableData: [],
         nickname: '',
-        showpage: '',
+        showpage: {},
         blankPage: false,
-        see: false,
         upass: false,
-        choiceId: ' ',
+        choiceId: '',
         form: {
           type: [],
           desc: '',
           result: ' ',
           art_id: ' '
         },
-        dataList: '',
+        dataList: [],
         currentPage1: 1,
         total: 0, // 总共的条数
-        size: 1 // 每页显示条目个数
+        size: 10 // 每页显示条目个数
       };
+    },
+    components: {
+      mode
     },
     filters: {
       formatDate (time) {
@@ -181,10 +159,13 @@
       this.getList();
     },
     methods: {
-      close () {
+      close ($t) {
         this.blankPage = false;
-        this.see = false;
         this.upass = false;
+        this.upass = false;
+        if ($t === 'upss') {
+          this.dataList.splice(this.choiceId, 1);
+        }
       },
       getList () {
         let self = this;
@@ -202,7 +183,6 @@
       getArticle (index, val) {
         var self = this;
         self.blankPage = true;
-        self.see = true;
         axios('get', '/api/select_article', {
           id: val[index].article_id
         }, (response) => {
@@ -230,25 +210,6 @@
         this.upass = true;
         this.choiceId = index;
         this.form.art_id = val[index].article_id;
-      },
-      onSubmit () {
-        var self = this;
-        this.form.result = '';
-        for (var value of (this.form.type)) {
-          this.form.result += value + '、';
-        }
-        axios('get', '/api/upassArt', {
-          art_id: this.form.article_id,
-          art_reason: this.form.result,
-          art_desc: this.form.desc
-        }, (response) => {
-          if (response.code === ERR_OK) {
-            self.tableData.splice(self.choiceId, 1);
-            self.close();
-          } else {
-            alert(response.msg);
-          }
-        });
       },
       handleSizeChange (val) {
         var self = this;

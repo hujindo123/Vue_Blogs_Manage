@@ -7,7 +7,7 @@ Vue.use(ElementUI);
 Vue.use(VueQuillEditor);
 
 import main from '@/views/index';
-import register from '@/views/user/register';
+// import register from '@/views/user/register';
 import login from '@/views/user/login';
 import addType from '@/views/art/addType';
 import addArt from '@/views/art/addArt';
@@ -18,10 +18,10 @@ export default new Router({
   mode: 'history',
   linkActiveClass: 'link-active',
   routes: [
-    {
+  /*  {
       path: '/register',
       component: register
-    },
+    }, */
     {
       path: '/login',
       component: login

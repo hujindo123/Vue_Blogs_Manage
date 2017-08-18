@@ -1,6 +1,6 @@
 <template>
   <div class="login_main">
-    <router-link to="/register" class="apply">申请成为管理员</router-link>
+    <!-- <router-link to="/register" class="apply">申请成为管理员</router-link> -->
     <div class="login_wrapper">
       <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
         <el-form-item label="账号" prop="username">
