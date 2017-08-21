@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
-    "start": "node build/dev-server.js",
+    "start": "http-server -a 47.93.236.237 -p 8080",
     "build": "node build/build.js",
     "lint": "eslint --ext .js,.vue src"
   },

@@ -13,6 +13,7 @@ import addType from '@/views/art/addType';
 import addArt from '@/views/art/addArt';
 import verifyList from '@/views/art/verifyList';
 import verifyLog from '@/views/art/verifyLog'; // 审核记录
+import NotFoundComponent from '@/views/NotFoundComponent';
 
 export default new Router({
   mode: 'history',
@@ -22,6 +23,7 @@ export default new Router({
       path: '/register',
       component: register
     }, */
+    { path: '*', component: NotFoundComponent },
     {
       path: '/login',
       component: login

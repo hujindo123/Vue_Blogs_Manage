@@ -3,9 +3,8 @@
     <div class="picker">
       <el-date-picker
         v-model="value1"
-        type="daterange"
-        placeholder="选择日期"
-        :picker-options="pickerOptions0">
+        type="date"
+        placeholder="选择日期">
       </el-date-picker>
       <button class="el-button el-button--primary" @click="search">查询</button>
     </div>
@@ -122,11 +121,6 @@
         upass: false,
         choiceId: ' ',
         nickname: '',
-        pickerOptions0: {
-          disabledDate (time) {
-            return time.getTime() < Date.now() - 8.64e7;
-          }
-        },
         value1: '',
         form: {
           type: [],
@@ -161,9 +155,20 @@
         this.getList();
       },
       search () {
-        let time1 = new Date().getTime(this.value1[0]);
-        let time2 = new Date().getTime(this.value1[1]);
-        console.log(time1, time2);
+        let self = this;
+        let time1 = new Date(this.value1).getTime();
+        axios('get', '/api/select_verify_log_time',
+          {
+            time1: time1
+          }, (response) => {
+            if (response.code === ERR_OK) {
+              self.tableData = response.data;
+              self.dataList = self.tableData.slice(0, self.size);
+              self.total = response.data.length;
+            } else {
+              console.log(response.msg);
+            }
+          });
       },
       getList () {
         let self = this;

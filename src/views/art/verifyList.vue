@@ -1,5 +1,13 @@
 <template>
-  <div>
+  <div class="log">
+    <div class="picker">
+      <el-date-picker
+        v-model="value1"
+        type="date"
+        placeholder="选择日期">
+      </el-date-picker>
+      <button class="el-button el-button--primary" @click="search">查询</button>
+    </div>
     <el-table :data="dataList" stripe style="width: 100%">
       <el-table-column
         label="日期"
@@ -60,66 +68,15 @@
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-  .e_button
-    margin-right 5%
+  .log
+    .picker
+      margin 10px
+    .e_button
+      margin-right 5%
 
-  .block
-    margin 20px auto
-    text-align center
-
-  .zhezhao
-    position absolute
-    width 100%
-    height 100%
-    top 0
-    left 0
-    z-index 2
-    background rgba(0, 0, 0, 0.5)
-    .close
-      font-size 35px
-      color #fff
-      position absolute
-      cursor pointer
-      left 50%
-      margin-left 250px
-      top 50%
-      margin-top -25px
-    .showpage
-      position relative
-      width 500px
-      min-height 100%
-      overflow hidden
-      overflow-y scroll
-      background #ffffff
-      left 50%
-      margin-left -330px
-      top 0
-      z-index 2
-      line-height 1.5
-      padding 0 10px
-      box-sizing border-box
-      h1
-        padding 25px
-        text-align center
-        font-size 20px
-        line-height 1.5
-        font-weight bold
-      .time
-        color #bebebe
-        .nickname
-          margin-left 50px
-      .c_content
-        margin-top 15px
-        img
-          width 100%
-    .v_msg
-      width 50%
-      padding 35px
-      box-sizing border-box
-      min-height 400px
-      background #fff
-      margin 0 auto
-      margin-top 50px
+    .block
+      margin 20px auto
+      text-align center
 </style>
 <script>
   const ERR_OK = 200;
@@ -134,6 +91,7 @@
         blankPage: false,
         upass: false,
         choiceId: '',
+        value1: '',
         form: {
           type: [],
           desc: '',
@@ -166,6 +124,22 @@
         if ($t === 'upss') {
           this.dataList.splice(this.choiceId, 1);
         }
+      },
+      search () {
+        let self = this;
+        let time1 = new Date(this.value1).getTime();
+        axios('get', '/api/select_verify_list_time',
+          {
+            time1: time1
+          }, (response) => {
+            if (response.code === ERR_OK) {
+              self.tableData = response.data;
+              self.dataList = self.tableData.slice(0, self.size);
+              self.total = response.data.length;
+            } else {
+              console.log(response.msg);
+            }
+          });
       },
       getList () {
         let self = this;
